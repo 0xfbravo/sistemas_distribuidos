@@ -57,12 +57,19 @@ public class SDProcess implements Runnable, SDPublisher {
                         String command = commandSplitted[0];
                         switch (command) {
 
+                            case MulticastUtils.COMMAND_ELECTION:
+                                publishElectionAnswer();
+                                break;
+
+                            case MulticastUtils.ANSWER_ELECTION:
+                                Integer candidateId = Integer.valueOf(commandSplitted[1]);
+                                if (candidateId > SDProcess.this.id) { setCoordinatorId(candidateId); }
+                                else { publishCoordinatorVictory(); }
+                                break;
+
                             case MulticastUtils.COMMAND_UPDATE_CLOCK:
                                 Double newClock = Double.valueOf(commandSplitted[1]);
                                 setLocalClock(newClock);
-                                break;
-
-                            case MulticastUtils.COMMAND_GET_HIGHER_PROCESS:
                                 break;
 
                             case MulticastUtils.COMMAND_COORDINATOR_VICTORY:
@@ -94,6 +101,39 @@ public class SDProcess implements Runnable, SDPublisher {
         String readString = "SDProcess [" + this.toString() + "] initialized with clock="+ this.localClock.toString() +" clockIncrement=" + this.clockIncrement.toString();
         System.out.println(readString);
         doClockIncrement();
+    }
+
+    /**
+     * Sends to every SDProcess on multicast that a new election has begun.
+     */
+    @Override
+    public void publishStartElection() throws IOException {
+        String readString = "SDProcess [" + this.toString() + "] ￿started election!";
+        System.out.println(readString);
+
+        /* Mounts msg to send */
+        DatagramSocket datagramSocket = new DatagramSocket();
+        String msg = MulticastUtils.generateCommandMsg(CommandType.ELECTION);
+
+        /* Mounts datagram packet */
+        DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
+        datagramSocket.send(packet);
+        datagramSocket.close();
+    }
+
+    /**
+     * Sends to every SDProcess on multicast my id.
+     */
+    @Override
+    public void publishElectionAnswer() throws IOException {
+        /* Mounts msg to send */
+        DatagramSocket datagramSocket = new DatagramSocket();
+        String msg = MulticastUtils.generateCommandMsg(CommandType.COORDINATOR_VICTORY, this.id.toString());
+
+        /* Mounts datagram packet */
+        DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
+        datagramSocket.send(packet);
+        datagramSocket.close();
     }
 
     /**

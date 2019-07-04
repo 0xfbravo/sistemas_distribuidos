@@ -8,7 +8,6 @@ class MulticastUtils {
     static final String COMMAND_ELECTION = "ELECTION";
     static final String ANSWER_ELECTION = "ANSWER_ELECTION";
     static final String COMMAND_COORDINATOR_VICTORY = "COORDINATOR_VICTORY";
-    static final String COMMAND_GET_HIGHER_PROCESS = "GET_HIGHER_PROCESS";
     static final String COMMAND_UPDATE_CLOCK = "UPDATE_CLOCK";
     static final String COMMAND_KILL_PROCESS = "KILL_PROCESS";
 

@@ -10,7 +10,6 @@ public class Main {
             SDProcess p1 = new SDProcess(MulticastUtils.nextAvailableProcessId(), "b");
             SDProcess p2 = new SDProcess(MulticastUtils.nextAvailableProcessId(), "c");
 
-
             /* Reads user input */
             Scanner scanner = new Scanner(System.in);
             System.out.println("\t== Sistemas Distribuídos ==");
@@ -19,13 +18,15 @@ public class Main {
             System.out.println("----");
             System.out.print("Digite a sua opção: ");
 
-            Integer option = scanner.nextInt();
-            if (option == 0) {
-                // TODO: Implement Bully Algorithm
-                p2.publishCoordinatorVictory();
-            }
-            else {
-                System.out.println("Opção inválida.");
+            int option = scanner.nextInt();
+            switch (option) {
+                case 0:
+                    p0.publishStartElection();
+                    break;
+
+                default:
+                    System.out.println("Opção inválida.");
+                    break;
             }
 
         }
