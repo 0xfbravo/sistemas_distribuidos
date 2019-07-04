@@ -23,7 +23,7 @@ public class SDProcess implements Runnable, SDPublisher {
     /* Bully Algorithm */
     private Integer coordinatorId = -1;
 
-    /* Berkley Algorithm */
+    /* Berkeley Algorithm */
     private ArrayList<Double> slavesClocks = new ArrayList<>();
 
     SDProcess(Integer id, String name) throws IOException {
@@ -75,9 +75,13 @@ public class SDProcess implements Runnable, SDPublisher {
                             case MulticastUtils.COMMAND_COORDINATOR_VICTORY:
                                 Integer coordinatorId = Integer.valueOf(commandSplitted[1]);
                                 setCoordinatorId(coordinatorId);
+
+                                // Starts a block sync when a coordinator is selected
+                                if (SDProcess.this.id.equals(SDProcess.this.coordinatorId))
+                                    publishStartClocksSync();
                                 break;
 
-                            // Berkley Algorithm Commands
+                            // Berkeley Algorithm Commands
                             case MulticastUtils.COMMAND_SYNC_CLOCKS:
                                 publishClockSyncAnswer();
                                 break;
@@ -91,7 +95,7 @@ public class SDProcess implements Runnable, SDPublisher {
                                 Double slaveClock = Double.valueOf(commandSplitted[1]);
                                 slavesClocks.add(slaveClock);
 
-                                // TODO: Berkley algorithm
+                                // TODO: Berkeley algorithm
 
                                 break;
 
@@ -158,6 +162,9 @@ public class SDProcess implements Runnable, SDPublisher {
         DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
         datagramSocket.send(packet);
         datagramSocket.close();
+
+        String readString = "SDProcess [" + SDProcess.this.toString() + "] sends command=" + msg;
+        System.out.println(readString);
     }
 
     /**
@@ -173,6 +180,9 @@ public class SDProcess implements Runnable, SDPublisher {
         DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
         datagramSocket.send(packet);
         datagramSocket.close();
+
+        String readString = "SDProcess [" + SDProcess.this.toString() + "] sends command=" + msg;
+        System.out.println(readString);
     }
 
     /**
@@ -206,6 +216,9 @@ public class SDProcess implements Runnable, SDPublisher {
         DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
         datagramSocket.send(packet);
         datagramSocket.close();
+
+        String readString = "SDProcess [" + SDProcess.this.toString() + "] sends command=" + msg;
+        System.out.println(readString);
     }
 
     /**
@@ -222,6 +235,9 @@ public class SDProcess implements Runnable, SDPublisher {
         DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
         datagramSocket.send(packet);
         datagramSocket.close();
+
+        String readString = "SDProcess [" + SDProcess.this.toString() + "] sends command=" + msg;
+        System.out.println(readString);
     }
 
     /**

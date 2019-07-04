@@ -7,7 +7,7 @@ public interface SDPublisher {
     void publishElectionAnswer() throws IOException;
     void publishCoordinatorVictory() throws IOException;
 
-    // Berkley Algorithm
+    // Berkeley Algorithm
     void publishStartClocksSync() throws IOException;
     void publishClockSyncAnswer() throws IOException;
     void publishUpdatedClock(Double newClockValue) throws IOException;
