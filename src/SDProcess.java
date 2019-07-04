@@ -128,7 +128,7 @@ public class SDProcess implements Runnable, SDPublisher {
     public void publishElectionAnswer() throws IOException {
         /* Mounts msg to send */
         DatagramSocket datagramSocket = new DatagramSocket();
-        String msg = MulticastUtils.generateCommandMsg(CommandType.COORDINATOR_VICTORY, this.id.toString());
+        String msg = MulticastUtils.generateCommandMsg(CommandType.ANSWER_ELECTION, this.id.toString());
 
         /* Mounts datagram packet */
         DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
