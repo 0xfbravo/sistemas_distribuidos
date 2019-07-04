@@ -12,21 +12,11 @@ public class Main {
 
             /* Reads user input */
             Scanner scanner = new Scanner(System.in);
-            System.out.println("\t== Sistemas Distribuídos ==");
-            System.out.println("----");
-            System.out.println(":: 0 -> Executar algoritmos");
-            System.out.println("----");
-            System.out.print("Digite a sua opção: ");
-
             int option = scanner.nextInt();
-            switch (option) {
-                case 0:
-                    p0.publishStartElection();
-                    break;
-
-                default:
-                    System.out.println("Opção inválida.");
-                    break;
+            if (option == 0) {
+                p0.publishStartElection();
+            } else {
+                System.out.println("Opção inválida.");
             }
 
         }

@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class SDProcess implements Runnable, SDPublisher {
@@ -21,6 +22,9 @@ public class SDProcess implements Runnable, SDPublisher {
 
     /* Bully Algorithm */
     private Integer coordinatorId = -1;
+
+    /* Berkley Algorithm */
+    private ArrayList<Double> slavesClocks = new ArrayList<>();
 
     SDProcess(Integer id, String name) throws IOException {
         this.id = id;
@@ -57,19 +61,15 @@ public class SDProcess implements Runnable, SDPublisher {
                         String command = commandSplitted[0];
                         switch (command) {
 
+                            // Bully Algorithm Commands
                             case MulticastUtils.COMMAND_ELECTION:
                                 publishElectionAnswer();
                                 break;
 
-                            case MulticastUtils.ANSWER_ELECTION:
+                            case MulticastUtils.COMMAND_ANSWER_ELECTION:
                                 Integer candidateId = Integer.valueOf(commandSplitted[1]);
-                                if (candidateId > SDProcess.this.id) { setCoordinatorId(candidateId); }
+                                if (candidateId >= SDProcess.this.id) { setCoordinatorId(candidateId); }
                                 else { publishCoordinatorVictory(); }
-                                break;
-
-                            case MulticastUtils.COMMAND_UPDATE_CLOCK:
-                                Double newClock = Double.valueOf(commandSplitted[1]);
-                                setLocalClock(newClock);
                                 break;
 
                             case MulticastUtils.COMMAND_COORDINATOR_VICTORY:
@@ -77,6 +77,30 @@ public class SDProcess implements Runnable, SDPublisher {
                                 setCoordinatorId(coordinatorId);
                                 break;
 
+                            // Berkley Algorithm Commands
+                            case MulticastUtils.COMMAND_SYNC_CLOCKS:
+                                publishClockSyncAnswer();
+                                break;
+
+                            case MulticastUtils.COMMAND_ANSWER_CLOCK_SYNC:
+                                // Check if current SDProcess is a master (Coordinator)
+                                if (!SDProcess.this.id.equals(SDProcess.this.coordinatorId))
+                                    return;
+
+                                // Stores slave clock
+                                Double slaveClock = Double.valueOf(commandSplitted[1]);
+                                slavesClocks.add(slaveClock);
+
+                                // TODO: Berkley algorithm
+
+                                break;
+
+                            case MulticastUtils.COMMAND_UPDATE_CLOCK:
+                                Double newClock = Double.valueOf(commandSplitted[1]);
+                                setLocalClock(newClock);
+                                break;
+
+                            // Other Commands
                             case MulticastUtils.COMMAND_KILL_PROCESS:
                                 break;
 
@@ -144,6 +168,39 @@ public class SDProcess implements Runnable, SDPublisher {
         /* Mounts msg to send */
         DatagramSocket datagramSocket = new DatagramSocket();
         String msg = MulticastUtils.generateCommandMsg(CommandType.COORDINATOR_VICTORY, this.id.toString());
+
+        /* Mounts datagram packet */
+        DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
+        datagramSocket.send(packet);
+        datagramSocket.close();
+    }
+
+    /**
+     * Sends to every SDProcess on multicast that a new clock sync has begun.
+     */
+    @Override
+    public void publishStartClocksSync() throws IOException {
+        String readString = "SDProcess [" + this.toString() + "] ￿started a clock sync!";
+        System.out.println(readString);
+
+        /* Mounts msg to send */
+        DatagramSocket datagramSocket = new DatagramSocket();
+        String msg = MulticastUtils.generateCommandMsg(CommandType.SYNC_CLOCKS);
+
+        /* Mounts datagram packet */
+        DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);
+        datagramSocket.send(packet);
+        datagramSocket.close();
+    }
+
+    /**
+     * Sends to every SDProcess on multicast my current clock.
+     */
+    @Override
+    public void publishClockSyncAnswer() throws IOException {
+        /* Mounts msg to send */
+        DatagramSocket datagramSocket = new DatagramSocket();
+        String msg = MulticastUtils.generateCommandMsg(CommandType.ANSWER_CLOCK_SYNC, this.localClock.toString());
 
         /* Mounts datagram packet */
         DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, group, MulticastUtils.socketPort);

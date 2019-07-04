@@ -6,8 +6,10 @@ class MulticastUtils {
 
     /* Available Commands */
     static final String COMMAND_ELECTION = "ELECTION";
-    static final String ANSWER_ELECTION = "ANSWER_ELECTION";
+    static final String COMMAND_ANSWER_ELECTION = "ANSWER_ELECTION";
     static final String COMMAND_COORDINATOR_VICTORY = "COORDINATOR_VICTORY";
+    static final String COMMAND_SYNC_CLOCKS = "SYNC_CLOCKS";
+    static final String COMMAND_ANSWER_CLOCK_SYNC = "ANSWER_CLOCK_SYNC";
     static final String COMMAND_UPDATE_CLOCK = "UPDATE_CLOCK";
     static final String COMMAND_KILL_PROCESS = "KILL_PROCESS";
 
